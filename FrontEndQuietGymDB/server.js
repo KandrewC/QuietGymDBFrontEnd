@@ -38,14 +38,21 @@ function updateCustomer(CustomerID, CustomerFName, CustomerLName, CustomerDOB, C
   return new sql.Request().query(query);
 }
 
+function displayAllCustomers() {
+  console.log("displaying top 1000 Customers");
+  return new sql.Request().query('SELECT TOP 1000 * FROM dbo.CUSTOMER ORDER BY CustomerID DESC');
+}
+
 function createCustomer( CustomerFName, CustomerLName, CustomerDOB, CustomerEmail) {
   console.log("Creating Customer");
-  return new sql.Request()
-    .input('CustomerFName', sql.VarChar(30), CustomerFName)
-    .input('CustomerLName', sql.VarChar(30), CustomerLName)
-    .input('CustomerDOB', sql.Date(), CustomerDOB)
-    .input('CustomerEmail', sql.VarChar(100), CustomerEmail)
-    .execute('dbo.uspNewPerson')
+    return new sql.Request().query('SELECT TOP 5 * FROM dbo.CUSTOMER');
+    
+  // return new sql.Request()
+  //   .input('CustomerFName', sql.VarChar(30), CustomerFName)
+  //   .input('CustomerLName', sql.VarChar(30), CustomerLName)
+  //   .input('CustomerDOB', sql.Date(), CustomerDOB)
+  //   .input('CustomerEmail', sql.VarChar(100), CustomerEmail)
+  //   .execute('dbo.uspNewPerson')
 }
 
 function deleteCustomer(CustomerID) {
@@ -56,7 +63,7 @@ function deleteCustomer(CustomerID) {
 }
 
 function getCustomerObject(CustomerID) {
-    return new sql.Request().query('SELECT * FROM dbo.PERSON WHERE CustomerID =' + CustomerID);
+    return new sql.Request().query('SELECT * FROM dbo.CUSTOMER WHERE CustomerID =' + CustomerID);
 }
 
 //ROUTES
@@ -65,10 +72,9 @@ function makeRouter() {
   app.get('/', function (req, res) {
     res.sendFile('/index.html', { root: __dirname })
   })
-  app.post('/createPerson', function (req, res) {
+  app.post('/createCustomer', function (req, res) {
       console.log("HAIHSIDHASIDHASIHD");
-      connectToDb().then(function () {
-      print(req)
+      console.log(req)
       var PersonID = req.body.PersonID;
       var PersonFname = req.body.PersonFname;
       var PersonLname = req.body.PersonLname;
@@ -79,8 +85,13 @@ function makeRouter() {
       }).catch(function (err) {
         console.log(err);
       });
-    });
   });
+
+  app.get('/Customers/all', function (req, res) {
+    displayAllCustomers().then(function (data) {
+      return res.json(data);
+    });
+  })
 }    
     connectToDb().then(() => {
       console.log("connected");
